@@ -20,7 +20,7 @@ let register = async ({body: {email,username,password}}:Request, res:Response)=>
         client.set(email,JSON.stringify(user),redis.print)
         res.status(201).json({message:`user ${username} registered`})
     }else{
-        res.status(400).json({message:"username already used"})
+        res.status(400).json({message:"email already used"})
     }
 }
 
@@ -30,6 +30,8 @@ let login = async ({headers: {tkn} ,body: {email, password}}:Request, res:Respon
         if(await client.existsAsync(tkn)){
             res.status(400).json({message: "A user associated to this token is already logged in."})
         }else{
+            console.log("lello")
+            console.log("peppino")
             if(info.password === password){
                 let token = uidgen.generateSync();
                 client.set(String(token), info.email);
@@ -43,26 +45,10 @@ let login = async ({headers: {tkn} ,body: {email, password}}:Request, res:Respon
     }
 }
 
-let logout = async ({ body: { username,email,password } }:Request, res:Response) => {
-    client.del(email)
-    
+let logout = async ({headers:{tkn}, body: { username,email,password } }:Request, res:Response) => {
+    await client.existsAsync(tkn) && (client.del(tkn), res.status(200).json({message: "Succesfully logged out!"})) ||
+    res.status(400).json({message: "There is no user logged in whit this token."});
 }
-
-
-/*client.keys("*", async (err, keys) => {
-    if (await client.existsAsync(username)) {
-        keys.find(async (key) => {
-            if ((await client.getAsync(key)) == username) {
-                client.del(key)
-                res.status(201).json({message:"successful logout"})
-            }else{
-                res.status(400).json({message:"already logged out"})
-            }
-        })
-    } else {
-        res.status(404).json({message:"user not found"})
-    }
-})*/
 
 client.on("error", (error: any)=>console.error(error))
 
