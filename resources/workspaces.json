@@ -1,0 +1,29 @@
+[
+  {
+    "id": "Prova1",
+    "name": "Test Workspace",
+    "channelList": [
+      "idrandomprova",
+      "idgeneraleprova"
+    ],
+    "usersList": []
+  },
+  {
+    "id": "VRMNGEw3uYkgQfufAW8BFb",
+    "name": "secondWorkspace",
+    "channelsList": [
+      "NwURErP5VjMgyDELmUCy8V",
+      "D2SZLG1dfHn9SZEr88KaLf"
+    ],
+    "usersList": []
+  },
+  {
+    "id": "VytYe5pmwGtd7JQaH9bfFn",
+    "name": "thirdWorkspace",
+    "channelsList": [
+      "Ws4MkXwMUj73TqawoJUJPc",
+      "HekUX1wfqEyME9dkDxLzGK"
+    ],
+    "usersList": []
+  }
+]

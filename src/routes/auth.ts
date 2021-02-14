@@ -6,11 +6,20 @@ router.use(bodyparser.urlencoded({extended: true}));
 import redis from 'redis';
 import bluebird from 'bluebird';
 import { User } from '../interfaces/user';
+import { Workspace } from '../interfaces/workspace'
 import UIDGenerator from 'uid-generator';
 const uidgen = new UIDGenerator();
 
 //Bluebird.promisifyAll(redis.RedisClient.prototype);
 //bluebird.promisifyAll(redis.Multi.prototype);
+
+//Possiamo creare un user senza workspace, ma quando dobbiamo aggiugnerne una dobbiamo prima inizializzare la lista.
+/* let user:User = {email:"pippo@gmail.com", username:"pippo", password:"pippo1"}
+user.workspacesList = [];
+user.workspacesList.push({id:1, name:"test", channelsList:[], usersList:[]}) */
+//console.log(user);
+
+
 
 let client:any = bluebird.promisifyAll(redis.createClient());    //:p 8>
 
@@ -30,8 +39,6 @@ let login = async ({headers: {tkn} ,body: {email, password}}:Request, res:Respon
         if(await client.existsAsync(tkn)){
             res.status(400).json({message: "A user associated to this token is already logged in."})
         }else{
-            console.log("lello")
-            console.log("peppino")
             if(info.password === password){
                 let token = uidgen.generateSync();
                 client.set(String(token), info.email);
