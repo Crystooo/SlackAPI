@@ -27,86 +27,79 @@ let getUser = async (tkn:string):Promise<User | null> => {
     return null;
 }
 
+let checkToken =async ({headers:{tkn}}:Request, res:Response,next:NextFunction)=>{
+    let user = await getUser(tkn as string)
+    if(!user){
+        res.status(400).json({message:"invalid token"})
+    }else{
+        next()
+    }
+}
+
 let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)=>{
     let user = await getUser(tkn as string)
-    if(user){
-        let defaultChannels:Channel[]=[
-            {id:uidgen.generateSync(),name:"Random",usersList:[user.email] },
-            {id:uidgen.generateSync(),name:"General",usersList:[user.email]}
-        ]
-        let newWorkspace:Workspace={
-            id:uidgen.generateSync(),
-            name:name,
-            channelsList:[defaultChannels[0].id, defaultChannels[1].id],
-            usersList:[user.email]
-        }
-        if(user.workspacesList === undefined) user.workspacesList = [];
-        user.workspacesList.push(newWorkspace.id);
-        await client.setAsync(user.email, JSON.stringify(user));
-        workspacesReadByFile.push(newWorkspace);
-        updateFile();
-        res.status(200).json({message:`Workspace ${name} created!`})
-    }else{
-        res.status(400).json({message:"invalid token"})  
+    let defaultChannels:Channel[]=[
+        {id:uidgen.generateSync(),name:"Random",usersList:[user!.email] },
+        {id:uidgen.generateSync(),name:"General",usersList:[user!.email]}
+    ]
+    let newWorkspace:Workspace={
+        id:uidgen.generateSync(),
+        name:name,
+        channelsList:[defaultChannels[0].id, defaultChannels[1].id],
+        usersList:[user!.email]
     }
-
+    if(user!.workspacesList === undefined) user!.workspacesList = [];
+    user!.workspacesList.push(newWorkspace.id);
+    await client.setAsync(user!.email, JSON.stringify(user));
+    workspacesReadByFile.push(newWorkspace);
+    updateFile();
+    res.status(200).json({message:`Workspace ${name} created!`})
 }
 
 let joinWorkspace = async ({headers: {tkn},body:{id}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
     let workspace = workspacesReadByFile.find(item => item.id === id);
     if(!workspace) return res.status(404).json({message: "This workspace doesn't exist"}); 
-    if(user){
-        if(user.workspacesList === undefined) user.workspacesList = [];
-        if(workspace.usersList.find(item => item === user!.email)) return res.status(400).json({message: "This user's is already in this workspace!"})
-        workspace && user.workspacesList!.push(id);
-        await client.setAsync(user.email, JSON.stringify(user));
-        workspacesReadByFile.find(item => item.id === id)!.usersList.push(user.email);
-        updateFile();
-        res.status(200).json({message: "Workspace added"});
-    }else{
-        res.status(400).json({message:"This user doesn't exist!"});
-    }
+    if(user!.workspacesList === undefined) user!.workspacesList = [];
+    if(workspace.usersList.find(item => item === user!.email)) return res.status(400).json({message: "This user's is already in this workspace!"})
+    workspace && user!.workspacesList!.push(id);
+    await client.setAsync(user!.email, JSON.stringify(user));
+    workspacesReadByFile.find(item => item.id === id)!.usersList.push(user!.email);
+    updateFile();
+    res.status(200).json({message: "Workspace added"});
 }
 
 let getAllWorkspaces = async ({headers: {tkn}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
-    if(user){
-        let userWorkspacesName: string[] = [];
-        user.workspacesList!.forEach(workspaceId => workspacesReadByFile.find(item => {item.id === workspaceId && userWorkspacesName.push(item.name)}));
-        res.status(200).json(userWorkspacesName);
-    }else{
-        res.status(400).json({message: "This user doesn't exist"});
-    }
+    let userWorkspacesName: string[] = [];
+    user!.workspacesList!.forEach(workspaceId => workspacesReadByFile.find(item => {item.id === workspaceId && userWorkspacesName.push(item.name)}));
+    res.status(200).json(userWorkspacesName);
+    
 }
 
 let leaveWorkspace = async ({headers: {tkn}, body:{workspaceId}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
-    if(user){
-        let workspace=user.workspacesList?.find(x=>x==workspaceId)
-        if(workspace){
-            user.workspacesList?.splice(user.workspacesList.indexOf(workspaceId), 1);
-            let workspaceFromFile=workspacesReadByFile!.find(({id})=> id === workspaceId)
-            let userInWorkspace = workspaceFromFile?.usersList.find(email => email === user!.email);
-            if(userInWorkspace){
-                workspaceFromFile?.usersList.splice(workspaceFromFile.usersList.indexOf(user.email),1);
-                updateFile();
-                res.status(200).json({message: "Workspace left."});
-            }else{
-                res.status(400).json({message: "User not found in this workspace!"});
-            }
-            
+    let workspace=user!.workspacesList?.find(x=>x==workspaceId)
+    if(workspace){
+        user!.workspacesList?.splice(user!.workspacesList.indexOf(workspaceId), 1);
+        let workspaceFromFile=workspacesReadByFile!.find(({id})=> id === workspaceId)
+        let userInWorkspace = workspaceFromFile?.usersList.find(email => email === user!.email);
+        if(userInWorkspace){
+            workspaceFromFile?.usersList.splice(workspaceFromFile.usersList.indexOf(user!.email),1);
+            updateFile();
+            res.status(200).json({message: "Workspace left."});
         }else{
-            res.status(404).json({message: "Workspace not found."});
+            res.status(400).json({message: "User not found in this workspace!"});
         }
+        
     }else{
-        res.status(404).json({message: "User doesn't exist."});
+        res.status(404).json({message: "Workspace not found."});
     }
 }
 
 let deleteAccount = async({headers: {tkn}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
-    if(user){
+    if(user){//da un errore strano
         (workspacesReadByFile.forEach(workspace => 
             workspace.usersList.find((email) => {email === user!.email && 
                 workspace.usersList.splice(workspace.usersList.indexOf(email), 1)})));
@@ -128,11 +121,12 @@ function updateFile(){
     let data = JSON.stringify(workspacesReadByFile, null, 2);
     fs.writeFileSync(path, data);
 }
-                                        
-router.post('/workspace', createWorkspace);
-router.post('/join/workspace', joinWorkspace);
-router.get('/workspace', getAllWorkspaces);
-router.delete('/workspace',leaveWorkspace); //sicuramente piu facile di slack official
+
+client.on("error", (error: any)=>console.error(error))
+router.post('/workspace',checkToken,createWorkspace);
+router.post('/join/workspace',checkToken,joinWorkspace);
+router.get('/workspace',checkToken,getAllWorkspaces);
+router.delete('/workspace',checkToken,leaveWorkspace); //sicuramente piu facile di slack official
 router.delete('/user',deleteAccount);
 export default router;
 
