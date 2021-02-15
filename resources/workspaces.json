@@ -2,9 +2,10 @@
   {
     "id": "Prova1",
     "name": "Test Workspace",
-    "channelList": [
+    "channelsList": [
       "idrandomprova",
-      "idgeneraleprova"
+      "idgeneraleprova",
+      "RDH1SuzYvZcYdoB3g73NDt"
     ],
     "usersList": []
   },
@@ -16,7 +17,8 @@
       "D2SZLG1dfHn9SZEr88KaLf"
     ],
     "usersList": [
-      "pippo@gmail.com"
+      "pippo@gmail.com",
+      "pippo2@gmail.com"
     ]
   },
   {

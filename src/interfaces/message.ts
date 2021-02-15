@@ -5,5 +5,5 @@ export interface Message{
     sender:string,
     content:string,
     time:Date,
-    replies?: Reply[]
+    replies: Reply[]
 }

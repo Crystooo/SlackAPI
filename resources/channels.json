@@ -1,0 +1,26 @@
+[
+  {
+    "id": "idrandomprova",
+    "name": "random",
+    "usersList": [
+      "pippo@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "idgeneraleprova",
+    "name": "generale",
+    "usersList": [
+      "pippo@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "RDH1SuzYvZcYdoB3g73NDt",
+    "name": "canalePippo",
+    "usersList": [
+      "pippo@gmail.com"
+    ],
+    "messagesList": []
+  }
+]
