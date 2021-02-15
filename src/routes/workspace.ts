@@ -71,28 +71,28 @@ let deleteChannel = ({headers:{workspace_id, channel_id}}:Request, res:Response)
     res.status(200).json({message:"canale eliminato"});
 }
 
-let getChannelsNames= async ({body:{workspaceId}}:Request, res:Response)=>{//incompleto
+let getChannelsNames= async ({headers:{workspace_id}}:Request, res:Response)=>{//incompleto
     let channelsName: string[] = [];
-    let workspace=workspacesReadByFile.find(item => item.id === workspaceId)
+    let workspace=workspacesReadByFile.find(item => item.id === workspace_id)
     workspace!.channelsList!.forEach(channelId => channelsReadByFile.find(
         item => {item.id === channelId && channelsName.push(item.name)}));
     res.status(200).json({listOfChannels:channelsName})
 }
 
-let getUsers= ({body:{workspaceId}}:Request, res:Response)=>{
-    let workspace=workspacesReadByFile.find(item => item.id === workspaceId)
-    let usersName:string[] = []
-    workspace?.usersList.forEach((email) => {
-    let u:string=client.get(email,(_:any,reply:string)=>{
-            if(reply){
-                let user:User = JSON.parse(reply)
-                return resolve(reply)
-            }
-        })
-        usersName.push(JSON.parse(u).username)
-        console.log("u: ",u)
-    });
+let getUsers = async ({headers:{workspace_id}}:Request, res:Response)=>{
+    let workspace=workspacesReadByFile.find(item => item.id === workspace_id)
+    let usersName:{email:string, username:string}[] = []
+    for (let email of workspace!.usersList){//workspace.usersList.foreach
+        let user = await client.getAsync(email);
+        if(user){
+            let {email, username} = JSON.parse(user);
+            usersName.push({email, username});
+        }else{
+            res.status(404).json({message: "User not found."});
+        }
+    }
     res.status(200).json({listOfUsers:usersName})
+    
 }
 
 //useless
