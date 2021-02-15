@@ -25,7 +25,7 @@ let client:any = bluebird.promisifyAll(redis.createClient());    //:p 8>
 
 let register = async ({body: {email,username,password}}:Request, res:Response)=>{
     if(!(await client.existsAsync(email))){
-        let user: User = {email, username, password};
+        let user: User = {email, username, password, workspacesList: []};
         client.set(email,JSON.stringify(user),redis.print)
         res.status(201).json({message:`user ${username} registered`})
     }else{

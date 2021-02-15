@@ -39,8 +39,8 @@ let checkToken =async ({headers:{tkn}}:Request, res:Response,next:NextFunction)=
 let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)=>{
     let user = await getUser(tkn as string)
     let defaultChannels:Channel[]=[
-        {id:uidgen.generateSync(),name:"Random",usersList:[user!.email] },
-        {id:uidgen.generateSync(),name:"General",usersList:[user!.email]}
+        {id:uidgen.generateSync(),name:"Random",usersList:[user!.email], messagesList: [] },
+        {id:uidgen.generateSync(),name:"General",usersList:[user!.email], messagesList: []}
     ]
     let newWorkspace:Workspace={
         id:uidgen.generateSync(),
@@ -48,7 +48,6 @@ let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)
         channelsList:[defaultChannels[0].id, defaultChannels[1].id],
         usersList:[user!.email]
     }
-    if(user!.workspacesList === undefined) user!.workspacesList = [];
     user!.workspacesList.push(newWorkspace.id);
     await client.setAsync(user!.email, JSON.stringify(user));
     workspacesReadByFile.push(newWorkspace);
@@ -59,9 +58,8 @@ let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)
 let joinWorkspace = async ({headers: {tkn},body:{id}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
     let workspace = workspacesReadByFile.find(item => item.id === id);
-    if(!workspace) return res.status(404).json({message: "This workspace doesn't exist"}); 
-    if(user!.workspacesList === undefined) user!.workspacesList = [];
-    if(workspace.usersList.find(item => item === user!.email)) return res.status(400).json({message: "This user's is already in this workspace!"})
+    !workspace && res.status(404).json({message: "This workspace doesn't exist"});
+    if(workspace!.usersList.find(item => item === user!.email)) return res.status(400).json({message: "This user's is already in this workspace!"})
     workspace && user!.workspacesList!.push(id);
     await client.setAsync(user!.email, JSON.stringify(user));
     workspacesReadByFile.find(item => item.id === id)!.usersList.push(user!.email);
@@ -71,8 +69,8 @@ let joinWorkspace = async ({headers: {tkn},body:{id}}:Request, res:Response) => 
 
 let getAllWorkspaces = async ({headers: {tkn}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
-    let userWorkspacesName: string[] = [];
-    user!.workspacesList!.forEach(workspaceId => workspacesReadByFile.find(item => {item.id === workspaceId && userWorkspacesName.push(item.name)}));
+    let userWorkspacesName: {id:string, name:string}[] = [];
+    user!.workspacesList!.forEach(workspaceId => workspacesReadByFile.find(item => {item.id === workspaceId && userWorkspacesName.push({id:item.id, name: item.name})}));
     res.status(200).json(userWorkspacesName);
     
 }
@@ -99,7 +97,7 @@ let leaveWorkspace = async ({headers: {tkn}, body:{workspaceId}}:Request, res:Re
 
 let deleteAccount = async({headers: {tkn}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
-    if(user){//da un errore strano
+    if(user){
         (workspacesReadByFile.forEach(workspace => 
             workspace.usersList.find((email) => {email === user!.email && 
                 workspace.usersList.splice(workspace.usersList.indexOf(email), 1)})));
@@ -108,8 +106,16 @@ let deleteAccount = async({headers: {tkn}}:Request, res:Response) => {
         client.del(user.email);
         res.status(200).json({message: "User deleted."})
     }else{
-        res.status(404).json({message: "User not found."});
+        res.status(404).json({message: "Invalid Token."});
     }
+}
+
+let enterWorkspace = async ({headers: {tkn}, body: {id}}:Request, res:Response) => {
+    let user = await getUser(tkn as string);
+    let workspace = workspacesReadByFile.find((item) => item.id === id);
+    !workspace && res.status(404).json({message: "A workspace with this id doesn't exist!"});
+    workspace?.usersList.find(email => email === user!.email) && res.status(200).json(workspace.id)
+    || res.status(404).json({message: "This user doesn't in this workspace!"});
 }
 
 function readFile(){
@@ -122,10 +128,13 @@ function updateFile(){
     fs.writeFileSync(path, data);
 }
 
-client.on("error", (error: any)=>console.error(error))
+client.on("error", (error: any)=>console.error(error));
+router.get('/workspace',checkToken,getAllWorkspaces);
+router.get('/loginWorkspace', checkToken, enterWorkspace);
+
 router.post('/workspace',checkToken,createWorkspace);
 router.post('/join/workspace',checkToken,joinWorkspace);
-router.get('/workspace',checkToken,getAllWorkspaces);
+
 router.delete('/workspace',checkToken,leaveWorkspace); //sicuramente piu facile di slack official
 router.delete('/user',deleteAccount);
 export default router;
