@@ -5,7 +5,7 @@ import { existsSync } from 'fs';
 router.use(bodyparser.json());
 router.use(bodyparser.urlencoded({extended: true}));
 import redis from 'redis';
-import bluebird from 'bluebird';
+import bluebird, { resolve } from 'bluebird';
 import { User } from '../interfaces/user';
 import { Workspace } from '../interfaces/workspace'
 import { Channel } from '../interfaces/channel'
@@ -79,10 +79,20 @@ let getChannelsNames= async ({body:{workspaceId}}:Request, res:Response)=>{//inc
     res.status(200).json({listOfChannels:channelsName})
 }
 
-let getUsers=async ({body:{workspaceId}}:Request, res:Response)=>{
+let getUsers= ({body:{workspaceId}}:Request, res:Response)=>{
     let workspace=workspacesReadByFile.find(item => item.id === workspaceId)
-    let users = await client.getAsync(workspace?.usersList);
-    res.status(200).json({listOfUsers:JSON.parse(users).username})
+    let usersName:string[] = []
+    workspace?.usersList.forEach((email) => {
+    let u:string=client.get(email,(_:any,reply:string)=>{
+            if(reply){
+                let user:User = JSON.parse(reply)
+                return resolve(reply)
+            }
+        })
+        usersName.push(JSON.parse(u).username)
+        console.log("u: ",u)
+    });
+    res.status(200).json({listOfUsers:usersName})
 }
 
 //useless
