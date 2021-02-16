@@ -11,6 +11,9 @@ const options: cors.CorsOptions = {
       'Content-Type',
       'Accept',
       'X-Access-Token',
+      'email',//AGGIUNTI GLI HEADERS ALTRIMENTI CORS DAVA ERRORE
+      'tkn',
+      'password'
     ],
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
