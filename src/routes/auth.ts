@@ -34,7 +34,6 @@ let register = async ({body: {email,username,password}}:Request, res:Response)=>
 }
 
 let login = async ({headers: {tkn,email, password}}:Request, res:Response) => {
-    console.log(email, tkn, password)
     if(await client.existsAsync(email)){
         let info = JSON.parse(await client.getAsync(email));
         if(await client.existsAsync(tkn)){//controllo email associata al token con email utente per vedere se l'utente già loggato prova ad effettuare l'accesso
