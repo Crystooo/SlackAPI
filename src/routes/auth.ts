@@ -25,7 +25,7 @@ let client:any = bluebird.promisifyAll(redis.createClient());    //:p 8>
 
 let register = async ({body: {email,username,password}}:Request, res:Response)=>{
     if(!(await client.existsAsync(email))){
-        let user: User = {email, username, password, workspacesList: []};
+        let user: User = {email, username, password, workspacesList:[]};
         client.set(email,JSON.stringify(user),redis.print)
         res.status(201).json({message:`user ${username} registered`})
     }else{
@@ -35,14 +35,18 @@ let register = async ({body: {email,username,password}}:Request, res:Response)=>
 
 let login = async ({headers: {tkn,email, password}}:Request, res:Response) => {
     if(await client.existsAsync(email)){
+        //console.log("sono gay") ci entra
         let info = JSON.parse(await client.getAsync(email));
         if(await client.existsAsync(tkn)){//controllo email associata al token con email utente per vedere se l'utente già loggato prova ad effettuare l'accesso
+            console.log("salsiccia")
             res.status(400).json({message: "A user associated to this token is already logged in."})
         }else{
             if(info.password === password){
                 let token = uidgen.generateSync();
-                client.set(String(token), info.email);
-                res.status(200).json({message: "Welcome " + info.username, token})
+                token=String(token)
+                client.set(token, info.email);
+                //console.log("username+token: ",info.username, token)
+                res.status(200).json({token,username:info.username})
             }else{
                 res.status(400).json({message: "Wrong password!"});
             }
