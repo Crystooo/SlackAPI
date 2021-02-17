@@ -92,7 +92,6 @@ let getUsers = async ({headers:{workspace_id}}:Request, res:Response)=>{
         }
     }
     res.status(200).json({listOfUsers:usersName})
-    
 }
 
 //useless

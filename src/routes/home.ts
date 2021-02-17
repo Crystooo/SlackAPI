@@ -52,7 +52,7 @@ let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)
     await client.setAsync(user!.email, JSON.stringify(user));
     workspacesReadByFile.push(newWorkspace);
     updateFile();
-    res.status(200).json({message:`Workspace ${name} created!`})
+    res.status(200).json({message:`Workspace ${name} created!`,workspaceId:newWorkspace.id})
 }
 
 let joinWorkspace = async ({headers: {tkn},body:{id}}:Request, res:Response) => {
@@ -67,12 +67,11 @@ let joinWorkspace = async ({headers: {tkn},body:{id}}:Request, res:Response) => 
     res.status(200).json({message: "Workspace added"});
 }
 
-let getAllWorkspaces = async ({headers: {tkn}}:Request, res:Response) => {
+let AllWorkspaces = async ({headers: {tkn}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
     let userWorkspacesName: {id:string, name:string}[] = [];
     user!.workspacesList!.forEach(workspaceId => workspacesReadByFile.find(item => {item.id === workspaceId && userWorkspacesName.push({id:item.id, name: item.name})}));
     res.status(200).json(userWorkspacesName);
-    
 }
 
 let leaveWorkspace = async ({headers: {tkn}, body:{workspaceId}}:Request, res:Response) => {
@@ -129,7 +128,7 @@ function updateFile(){
 }
 
 client.on("error", (error: any)=>console.error(error));
-router.get('/workspace',checkToken,getAllWorkspaces);
+router.get('/workspace',checkToken,AllWorkspaces);
 router.get('/loginWorkspace', checkToken, enterWorkspace);
 
 router.post('/workspace',checkToken,createWorkspace);
