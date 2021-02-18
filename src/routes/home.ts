@@ -74,12 +74,12 @@ let AllWorkspaces = async ({headers: {tkn}}:Request, res:Response) => {
     res.status(200).json(userWorkspacesName);
 }
 
-let leaveWorkspace = async ({headers: {tkn,workspaceId}}:Request, res:Response) => {//delete no body
+let leaveWorkspace = async ({headers: {tkn,workspace_id}}:Request, res:Response) => {//delete no body
     let user = await getUser(tkn as string)
-    let workspace=user!.workspacesList?.find(x=>x==workspaceId)
+    let workspace=user!.workspacesList?.find(x=>x==workspace_id)
     if(workspace){
-        user!.workspacesList?.splice(user!.workspacesList.indexOf(String(workspaceId)), 1);
-        let workspaceFromFile=workspacesReadByFile!.find(({id})=> id === workspaceId)
+        user!.workspacesList?.splice(user!.workspacesList.indexOf(String(workspace_id)), 1);
+        let workspaceFromFile=workspacesReadByFile!.find(({id})=> id === workspace_id)
         let userInWorkspace = workspaceFromFile?.usersList.find(email => email === user!.email);
         if(userInWorkspace){
             workspaceFromFile?.usersList.splice(workspaceFromFile.usersList.indexOf(user!.email),1);
