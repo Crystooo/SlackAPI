@@ -47,6 +47,11 @@ let checkToken =async ({headers:{tkn}}:Request, res:Response,next:NextFunction)=
     }
 }*/
 
+let getWorkspaceName = ({headers: {workspace_id}}:Request, res:Response) => {
+    let workspace = workspacesReadByFile.find(item => item.id === workspace_id);
+    workspace && res.status(200).json({name: workspace.name}) || res.status(404).json({message:"workspace not found"});
+}
+
 let createChannel = async({headers: {tkn, workspace_id}, body: {name}}:Request, res:Response) => {
     let user = await getUser(tkn as  string);
     let channel = {id:uidgen.generateSync(), name, usersList: [user!.email], messagesList: []};
@@ -125,6 +130,7 @@ function updateFile(container: Workspace[] | Channel [], filePath:string){
 }
 
 client.on("error", (error: any)=>console.error(error))
+router.get('/', getWorkspaceName);
 router.get('/channel',checkToken,getChannelsNames);
 router.get('/user',checkToken,getUsers);
 router.post('/channel',checkToken,createChannel);

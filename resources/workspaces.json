@@ -7,7 +7,11 @@
       "idgeneraleprova",
       "RDH1SuzYvZcYdoB3g73NDt"
     ],
-    "usersList": []
+    "usersList": [
+      "pippo2@gmail.com",
+      "pippo3@gmail.com",
+      "pippo4@gmail.com"
+    ]
   },
   {
     "id": "VRMNGEw3uYkgQfufAW8BFb",
@@ -29,5 +33,19 @@
       "HekUX1wfqEyME9dkDxLzGK"
     ],
     "usersList": []
+  },
+  {
+    "id": "VfuvFyLpm6HoPP1Bp99Z9N",
+    "name": "Happy Hippo Freestyle",
+    "channelsList": [
+      "6HDpiA1Xnhuj9xz7utkF9S",
+      "9xZSha8KT9FEQnmY79AM9k"
+    ],
+    "usersList": [
+      "pippo2@gmail.com",
+      "pippo4@gmail.com",
+      "pippo3@gmail.com",
+      "pippo5@gmail.com"
+    ]
   }
 ]
