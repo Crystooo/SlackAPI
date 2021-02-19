@@ -37,6 +37,7 @@ let checkToken =async ({headers:{tkn}}:Request, res:Response,next:NextFunction)=
 }
 
 let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)=>{
+    console.log(name);
     let user = await getUser(tkn as string)
     let defaultChannels:Channel[]=[
         {id:uidgen.generateSync(),name:"Random",usersList:[user!.email], messagesList: [] },
@@ -55,14 +56,14 @@ let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)
     res.status(200).json({message:`Workspace ${name} created!`,workspaceId:newWorkspace.id})
 }
 
-let joinWorkspace = async ({headers: {tkn},body:{id}}:Request, res:Response) => {
+let joinWorkspace = async ({headers: {tkn, workspace_id}}:Request, res:Response) => {
     let user = await getUser(tkn as string)
-    let workspace = workspacesReadByFile.find(item => item.id === id);
+    let workspace = workspacesReadByFile.find(item => item.id === workspace_id);
     !workspace && res.status(404).json({message: "This workspace doesn't exist"});
     if(workspace!.usersList.find(item => item === user!.email)) return res.status(400).json({message: "This user's is already in this workspace!"})
-    workspace && user!.workspacesList!.push(id);
+    workspace && user!.workspacesList!.push(String(workspace_id));
     await client.setAsync(user!.email, JSON.stringify(user));
-    workspacesReadByFile.find(item => item.id === id)!.usersList.push(user!.email);
+    workspacesReadByFile.find(item => item.id === workspace_id)!.usersList.push(user!.email);
     updateFile();
     res.status(200).json({message: "Workspace added"});
 }
@@ -72,25 +73,6 @@ let AllWorkspaces = async ({headers: {tkn}}:Request, res:Response) => {
     let userWorkspacesName: {id:string, name:string}[] = [];
     user!.workspacesList!.forEach(workspaceId => workspacesReadByFile.find(item => {item.id === workspaceId && userWorkspacesName.push({id:item.id, name: item.name})}));
     res.status(200).json(userWorkspacesName);
-}
-
-let leaveWorkspace = async ({headers: {tkn,workspace_id}}:Request, res:Response) => {//delete no body
-    let user = await getUser(tkn as string)
-    let workspace=user!.workspacesList?.find(x=>x==workspace_id)
-    if(workspace){
-        user!.workspacesList?.splice(user!.workspacesList.indexOf(String(workspace_id)), 1);
-        let workspaceFromFile=workspacesReadByFile!.find(({id})=> id === workspace_id)
-        let userInWorkspace = workspaceFromFile?.usersList.find(email => email === user!.email);
-        if(userInWorkspace){
-            workspaceFromFile?.usersList.splice(workspaceFromFile.usersList.indexOf(user!.email),1);
-            updateFile();
-            res.status(200).json({message: "Workspace left."});
-        }else{
-            res.status(400).json({message: "User not found in this workspace!"});
-        }
-    }else{
-        res.status(404).json({message: "Workspace not found."});
-    }
 }
 
 let deleteAccount = async({headers: {tkn}}:Request, res:Response) => {
@@ -133,7 +115,7 @@ router.get('/loginWorkspace', checkToken, enterWorkspace);
 router.post('/workspace',checkToken,createWorkspace);
 router.post('/join/workspace',checkToken,joinWorkspace);
 
-router.delete('/workspace',checkToken,leaveWorkspace); //sicuramente piu facile di slack official
+ //sicuramente piu facile di slack official
 router.delete('/user',deleteAccount);
 export default router;
 

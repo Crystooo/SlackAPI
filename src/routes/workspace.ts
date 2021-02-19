@@ -94,14 +94,24 @@ let getUsers = async ({headers:{workspace_id}}:Request, res:Response)=>{
     res.status(200).json({listOfUsers:usersName})
 }
 
-//useless
-/*let exitFromWorkspace=async ({headers:{tkn},body:{workspaceId}}:Request, res:Response)=>{//provare per credere*****************
-    //let user = await getUser(tkn as string);
-    let workspace=workspacesReadByFile.find(item => item.id === workspaceId)
-    let users = await client.getAsync(workspace?.usersList);
-    let currentUser=users.find((item: any)=>item.email===client.getAsync(tkn))
-    console.log("currentUser: ",currentUser)
-}*/
+let leaveWorkspace = async ({headers: {tkn,workspace_id}}:Request, res:Response) => {//delete no body
+    let user = await getUser(tkn as string)
+    let workspace=user!.workspacesList?.find(x=>x==workspace_id)
+    if(workspace){
+        user!.workspacesList?.splice(user!.workspacesList.indexOf(String(workspace_id)), 1);
+        let workspaceFromFile=workspacesReadByFile!.find(({id})=> id === workspace_id)
+        let userInWorkspace = workspaceFromFile?.usersList.find(email => email === user!.email);
+        if(userInWorkspace){
+            workspaceFromFile?.usersList.splice(workspaceFromFile.usersList.indexOf(user!.email),1);
+            updateFile(workspacesReadByFile,path);
+            res.status(200).json({message: "Workspace left."});
+        }else{
+            res.status(400).json({message: "User not found in this workspace!"});
+        }
+    }else{
+        res.status(404).json({message: "Workspace not found."});
+    }
+}
 
 function readFile(container: Channel[] | Workspace[],filePath:string) {
     let rawdata = fs.readFileSync(filePath);
@@ -117,8 +127,10 @@ function updateFile(container: Workspace[] | Channel [], filePath:string){
 client.on("error", (error: any)=>console.error(error))
 router.get('/channel',checkToken,getChannelsNames);
 router.get('/user',checkToken,getUsers);
-//router.delete('/logoutWorkspace',checkToken,exitFromWorkspace)
-router.delete('/channel',checkToken,deleteChannel)
-router.post('/channel',checkToken,createChannel)
+router.post('/channel',checkToken,createChannel);
+
+router.delete('/leave',checkToken,leaveWorkspace);
+router.delete('/channel',checkToken,deleteChannel);
+
 
 export default router;

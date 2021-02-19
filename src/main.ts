@@ -13,7 +13,8 @@ const options: cors.CorsOptions = {
       'X-Access-Token',
       'email',//AGGIUNTI GLI HEADERS ALTRIMENTI CORS DAVA ERRORE
       'tkn',
-      'password'
+      'password',
+      'workspace_id'
     ],
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
