@@ -1,8 +1,8 @@
 import { Reply } from './reply'
 
 export interface Message{
-    id:number,
-    sender:string,
+    id:string,
+    userId:string,
     content:string,
     time:Date,
     replies: Reply[]

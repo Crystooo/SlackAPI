@@ -11,6 +11,7 @@ import { Workspace } from '../interfaces/workspace'
 import { Channel } from '../interfaces/channel'
 import UIDGenerator from 'uid-generator';
 import fs from 'fs';
+import { body, validationResult } from 'express-validator'
 const uidgen = new UIDGenerator();
 const path = process.cwd() + '\\resources\\workspaces.json'
 const path2 = process.cwd() + '\\resources\\channels.json'
@@ -19,6 +20,15 @@ let workspacesReadByFile: Workspace[]=[];
 let channelsReadByFile: Channel[]=[];
 workspacesReadByFile = readFile(workspacesReadByFile,path) as Workspace[];
 channelsReadByFile = readFile(channelsReadByFile,path2) as Channel[];
+
+var errorsHandler = (req:Request, res:Response, next:NextFunction) => {
+    var errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors: errors.array()});
+    }
+    next();
+}
+
 
 let getUser = async (tkn:string):Promise<User | null> => {  
     let userMail = await client.getAsync(tkn);
@@ -52,9 +62,9 @@ let getWorkspaceName = ({headers: {workspace_id}}:Request, res:Response) => {
     workspace && res.status(200).json({name: workspace.name}) || res.status(404).json({message:"workspace not found"});
 }
 
-let createChannel = async({headers: {tkn, workspace_id}, body: {name}}:Request, res:Response) => {
+let createChannel = async({headers: {tkn, workspace_id}, body: {name, privacy}}:Request, res:Response) => {
     let user = await getUser(tkn as  string);
-    let channel = {id:uidgen.generateSync(), name, usersList: [user!.email], messagesList: []};
+    let channel = {id:uidgen.generateSync(), name, private: privacy, usersList: [user!.email], messagesList: []};
     let workspace = workspacesReadByFile.find(({id}) => id === workspace_id);
     workspace!.channelsList.push(channel.id);
     updateFile(workspacesReadByFile, path);
@@ -76,12 +86,12 @@ let deleteChannel = ({headers:{workspace_id, channel_id}}:Request, res:Response)
     res.status(200).json({message:"canale eliminato"});
 }
 
-let getChannels= async ({headers:{workspace_id}}:Request, res:Response)=>{//incompleto
+let getChannels= async ({headers:{workspace_id}}:Request, res:Response)=>{
     let channels: {id:string, name:string}[] = [];
-    let workspace=workspacesReadByFile.find(item => item.id === workspace_id)
+    let workspace=workspacesReadByFile.find(item => item.id === workspace_id);
     workspace!.channelsList!.forEach(channelId => channelsReadByFile.find(
         item => {item.id === channelId && channels.push({id: item.id, name: item.name})}));
-    res.status(200).json(channels)
+    res.status(200).json(channels);
 }
 
 let getUsers = async ({headers:{workspace_id}}:Request, res:Response)=>{
@@ -133,7 +143,7 @@ client.on("error", (error: any)=>console.error(error))
 router.get('/', getWorkspaceName);
 router.get('/channels',getChannels);
 router.get('/users', getUsers);
-router.post('/channels',checkToken,createChannel);
+router.post('/channels',checkToken,body("name").isEmpty(),body("privacy").isEmpty(), errorsHandler,createChannel);
 
 router.delete('/leave',checkToken,leaveWorkspace);
 router.delete('/channels',checkToken,deleteChannel);

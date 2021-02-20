@@ -2,6 +2,7 @@
   {
     "id": "idrandomprova",
     "name": "random",
+    "private": false,
     "usersList": [
       "pippo@gmail.com"
     ],
@@ -10,6 +11,7 @@
   {
     "id": "idgeneraleprova",
     "name": "generale",
+    "private":false,
     "usersList": [
       "pippo@gmail.com"
     ],
@@ -18,8 +20,45 @@
   {
     "id": "RDH1SuzYvZcYdoB3g73NDt",
     "name": "canalePippo",
+    "private": true,
     "usersList": [
       "pippo@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "NwURErP5VjMgyDELmUCy8V",
+    "name": "random",
+    "private":false,
+    "usersList": [
+      "pippo3@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "D2SZLG1dfHn9SZEr88KaLf",
+    "name": "generale",
+    "private":false,
+    "usersList": [
+      "pippo3@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "6HDpiA1Xnhuj9xz7utkF9S",
+    "name": "random",
+    "private":false,
+    "usersList": [
+      "pippo4@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "9xZSha8KT9FEQnmY79AM9k",
+    "name": "generale",
+    "private":false,
+    "usersList": [
+      "pippo4@gmail.com"
     ],
     "messagesList": []
   }

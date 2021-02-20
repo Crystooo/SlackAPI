@@ -1,6 +1,6 @@
 export interface Reply{
-    id: number,
-    sender: string,
+    id: string,
+    userId: string,
     content: string,
     time: Date
 }

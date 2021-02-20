@@ -1,7 +1,8 @@
 import express from 'express';
 import auth from './routes/auth';
-import home from './routes/home';
-import workspace from './routes/workspace';
+import homes from './routes/home';
+import workspaces from './routes/workspace';
+import channels from './routes/channel'
 import cors from 'cors';
 let app=express();
 const options: cors.CorsOptions = {
@@ -14,7 +15,10 @@ const options: cors.CorsOptions = {
       'email',//AGGIUNTI GLI HEADERS ALTRIMENTI CORS DAVA ERRORE
       'tkn',
       'password',
-      'workspace_id'
+      'workspace_id',
+      'channel_id',
+      'to_add',
+      'user_id'
     ],
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
@@ -24,9 +28,10 @@ const options: cors.CorsOptions = {
   app.use(cors(options));
 
 
-app.use("/auth",auth);//schermata login
-app.use("/home", home);//seconda schermata
-app.use("/workspace",workspace)
+app.use("/auth",auth);
+app.use("/homes", homes);
+app.use("/workspaces",workspaces);
+app.use("/channels", channels);
 
 const port =3001;
 

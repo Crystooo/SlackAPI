@@ -1,4 +1,4 @@
-import express, {Request, Response, Router} from 'express';
+import express, {NextFunction, Request, Response, Router} from 'express';
 let router= Router();
 import bodyparser from'body-parser';
 router.use(bodyparser.json());
@@ -9,21 +9,19 @@ import { User } from '../interfaces/user';
 import { Workspace } from '../interfaces/workspace'
 import UIDGenerator from 'uid-generator';
 const uidgen = new UIDGenerator();
+import { body, validationResult } from 'express-validator'
 
-//Bluebird.promisifyAll(redis.RedisClient.prototype);
-//bluebird.promisifyAll(redis.Multi.prototype);
-
-//Possiamo creare un user senza workspace, ma quando dobbiamo aggiugnerne una dobbiamo prima inizializzare la lista.
-/* let user:User = {email:"pippo@gmail.com", username:"pippo", password:"pippo1"}
-user.workspacesList = [];
-user.workspacesList.push({id:1, name:"test", channelsList:[], usersList:[]}) */
-//console.log(user);
-
-
+var errorsHandler = (req:Request, res:Response, next:NextFunction) => {
+    var errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors: errors.array()});
+    }
+    next();
+}
 
 let client:any = bluebird.promisifyAll(redis.createClient());    //:p 8>
 
-let register = async ({body: {email,username,password}}:Request, res:Response)=>{
+let register = async ({body: {username,email,password}}:Request, res:Response)=>{
     if(!(await client.existsAsync(email))){
         let user: User = {email, username, password, workspacesList:[]};
         client.set(email,JSON.stringify(user),redis.print)
@@ -38,7 +36,6 @@ let login = async ({headers: {tkn,email, password}}:Request, res:Response) => {
         //console.log("sono gay") ci entra
         let info = JSON.parse(await client.getAsync(email));
         if(await client.existsAsync(tkn)){//controllo email associata al token con email utente per vedere se l'utente già loggato prova ad effettuare l'accesso
-            console.log("salsiccia")
             res.status(400).json({message: "A user associated to this token is already logged in."})
         }else{
             if(info.password === password){
@@ -67,7 +64,7 @@ router.post('/login', login)
 
 router.delete("/logout",logout)
 
-router.post("/register", register)
+router.post("/register",body("user.email").isEmpty(),body("user.username").isEmpty(),body("user.password").isEmpty(),errorsHandler, register)
 
 
 
