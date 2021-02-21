@@ -25,6 +25,11 @@ var errorsHandler = (req:Request, res:Response, next:NextFunction) => {
     next();
 }
 
+let getChannelName = ({headers:{channel_id}}:Request, res:Response)=>{
+    let channel= channelsReadByFile.find(item => item.id === channel_id);
+    channel && res.status(200).json(channel.name) || res.status(404).json({message:"channel not found"})
+}
+
 let getAllUsers = ({headers: {channel_id}}:Request, res:Response) => {
     let users:string[] = [];
     let channel = channelsReadByFile.find(item => item.id === channel_id);
@@ -90,7 +95,7 @@ function updateFile(container: Channel [] | Message[], filePath:string){
     fs.writeFileSync(filePath, data);
 }
 
-
+router.get('/', getChannelName);
 router.get("/messages",getAllMessages);
 router.get("/users",getAllUsers);
 

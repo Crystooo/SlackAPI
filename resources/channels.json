@@ -4,16 +4,20 @@
     "name": "random",
     "private": false,
     "usersList": [
-      "pippo@gmail.com"
+      "pippo@gmail.com",
+      "nello@taver.it",
+      "pippo2@gmail.com"
     ],
     "messagesList": []
   },
   {
     "id": "idgeneraleprova",
     "name": "generale",
-    "private":false,
+    "private": false,
     "usersList": [
-      "pippo@gmail.com"
+      "pippo@gmail.com",
+      "nello@taver.it",
+      "pippo2@gmail.com"
     ],
     "messagesList": []
   },
@@ -29,7 +33,7 @@
   {
     "id": "NwURErP5VjMgyDELmUCy8V",
     "name": "random",
-    "private":false,
+    "private": false,
     "usersList": [
       "pippo3@gmail.com"
     ],
@@ -38,7 +42,7 @@
   {
     "id": "D2SZLG1dfHn9SZEr88KaLf",
     "name": "generale",
-    "private":false,
+    "private": false,
     "usersList": [
       "pippo3@gmail.com"
     ],
@@ -47,18 +51,22 @@
   {
     "id": "6HDpiA1Xnhuj9xz7utkF9S",
     "name": "random",
-    "private":false,
+    "private": false,
     "usersList": [
-      "pippo4@gmail.com"
+      "pippo4@gmail.com",
+      "nello@taver.it",
+      "pippo2@gmail.com"
     ],
     "messagesList": []
   },
   {
     "id": "9xZSha8KT9FEQnmY79AM9k",
     "name": "generale",
-    "private":false,
+    "private": false,
     "usersList": [
-      "pippo4@gmail.com"
+      "pippo4@gmail.com",
+      "nello@taver.it",
+      "pippo2@gmail.com"
     ],
     "messagesList": []
   }
