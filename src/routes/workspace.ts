@@ -1,7 +1,7 @@
 import express, {Request, Response, Router, NextFunction} from 'express';
 let router= Router();
 import bodyparser, { json } from'body-parser';
-import { existsSync } from 'fs';
+import { existsSync, read } from 'fs';
 router.use(bodyparser.json());
 router.use(bodyparser.urlencoded({extended: true}));
 import redis from 'redis';
@@ -49,7 +49,8 @@ let checkToken =async ({headers:{tkn}}:Request, res:Response,next:NextFunction)=
 }
 
 let getWorkspaceName = ({headers: {workspace_id}}:Request, res:Response) => {
-    let workspace = workspacesReadByFile.find(item => item.id === workspace_id);
+    workspacesReadByFile = readFile(workspacesReadByFile, path)as Workspace[];
+    let workspace = workspacesReadByFile.find(item=> item.id === workspace_id);
     workspace && res.status(200).json({name: workspace.name}) || res.status(404).json({message:"workspace not found"});
 }
 
@@ -78,6 +79,7 @@ let deleteChannel = ({headers:{workspace_id, channel_id}}:Request, res:Response)
 }
 
 let getChannels= async ({headers:{workspace_id}}:Request, res:Response)=>{
+    channelsReadByFile = readFile(channelsReadByFile, path2) as Channel[];
     let channels: {id:string, name:string}[] = [];
     let workspace=workspacesReadByFile.find(item => item.id === workspace_id);
     workspace!.channelsList!.forEach(channelId => channelsReadByFile.find(
