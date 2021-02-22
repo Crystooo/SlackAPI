@@ -1,7 +1,6 @@
 import express, {Request, Response, Router, NextFunction} from 'express';
 let router= Router();
 import bodyparser from'body-parser';
-import { existsSync } from 'fs';
 router.use(bodyparser.json());
 router.use(bodyparser.urlencoded({extended: true}));
 import redis from 'redis';
@@ -10,13 +9,24 @@ import { User } from '../interfaces/user';
 import { Workspace } from '../interfaces/workspace'
 import { Channel } from '../interfaces/channel'
 import UIDGenerator from 'uid-generator';
+import { body, validationResult } from 'express-validator'
 import fs from 'fs';
 const uidgen = new UIDGenerator();
 const path = process.cwd() + '\\resources\\workspaces.json'
-
+const path2 = process.cwd() + '\\resources\\channels.json'
 let client:any = bluebird.promisifyAll(redis.createClient());
-let workspacesReadByFile: Workspace[] = [];
-readFile();
+let workspacesReadByFile: Workspace[]=[];
+let channelsReadByFile: Channel[]=[];
+workspacesReadByFile = readFile(workspacesReadByFile,path) as Workspace[];
+channelsReadByFile = readFile(channelsReadByFile,path2) as Channel[];
+
+var errorsHandler = (req:Request, res:Response, next:NextFunction) => {
+    var errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors: errors.array()});
+    }
+    next();
+}
 
 let getUser = async (tkn:string):Promise<User | null> => {  
     let userMail = await client.getAsync(tkn);
@@ -40,8 +50,8 @@ let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)
     console.log(name);
     let user = await getUser(tkn as string)
     let defaultChannels:Channel[]=[
-        {id:uidgen.generateSync(),name:"Random",usersList:[user!.email], messagesList: [] },
-        {id:uidgen.generateSync(),name:"General",usersList:[user!.email], messagesList: []}
+        {id:uidgen.generateSync(),name:"Random", private: false,usersList:[user!.email], messagesList: [] },
+        {id:uidgen.generateSync(),name:"General", private: false,usersList:[user!.email], messagesList: []}
     ]
     let newWorkspace:Workspace={
         id:uidgen.generateSync(),
@@ -52,7 +62,10 @@ let createWorkspace = async ({headers:{tkn},body: {name}}:Request, res:Response)
     user!.workspacesList.push(newWorkspace.id);
     await client.setAsync(user!.email, JSON.stringify(user));
     workspacesReadByFile.push(newWorkspace);
-    updateFile();
+    updateFile(workspacesReadByFile, path);
+    channelsReadByFile.push(defaultChannels[0])
+    channelsReadByFile.push(defaultChannels[1])
+    updateFile(channelsReadByFile, path2);
     res.status(200).json({message:`Workspace ${name} created!`,workspaceId:newWorkspace.id})
 }
 
@@ -64,7 +77,11 @@ let joinWorkspace = async ({headers: {tkn, workspace_id}}:Request, res:Response)
     workspace && user!.workspacesList!.push(String(workspace_id));
     await client.setAsync(user!.email, JSON.stringify(user));
     workspacesReadByFile.find(item => item.id === workspace_id)!.usersList.push(user!.email);
-    updateFile();
+    workspace?.channelsList.forEach(channelId => channelsReadByFile.find(channel => {
+        (channel.id === channelId && channel.private == false) && channel.usersList.push(user?.email as string);
+    }));
+    updateFile(workspacesReadByFile, path);
+    updateFile(channelsReadByFile, path2);
     res.status(200).json({message: "Workspace added"});
 }
 
@@ -81,7 +98,11 @@ let deleteAccount = async({headers: {tkn}}:Request, res:Response) => {
         (workspacesReadByFile.forEach(workspace => 
             workspace.usersList.find((email) => {email === user!.email && 
                 workspace.usersList.splice(workspace.usersList.indexOf(email), 1)})));
-        updateFile();
+        updateFile(workspacesReadByFile, path);
+        (channelsReadByFile.forEach(channel => 
+            channel.usersList.find((email) => {email === user!.email && 
+                channel.usersList.splice(channel.usersList.indexOf(email), 1)})));
+        updateFile(channelsReadByFile, path2);
         client.del(tkn);
         client.del(user.email);
         res.status(200).json({message: "User deleted."})
@@ -98,43 +119,26 @@ let enterWorkspace = async ({headers: {tkn}, body: {id}}:Request, res:Response) 
     || res.status(404).json({message: "This user doesn't in this workspace!"});
 }
 
-function readFile(){
-    let rawdata = fs.readFileSync(path);
-    workspacesReadByFile = JSON.parse(rawdata.toString());
+function readFile(container: Channel[] | Workspace[],filePath:string) {
+    let rawdata = fs.readFileSync(filePath);
+    container = JSON.parse(rawdata.toString());
+    return container;
 }
 
-function updateFile(){
-    let data = JSON.stringify(workspacesReadByFile, null, 2);
-    fs.writeFileSync(path, data);
+function updateFile(container: Workspace[] | Channel [], filePath:string){
+    let data = JSON.stringify(container, null, 2);
+    fs.writeFileSync(filePath, data);
 }
 
 client.on("error", (error: any)=>console.error(error));
 router.get('/workspace',checkToken,AllWorkspaces);
-router.get('/loginWorkspace', checkToken, enterWorkspace);
+router.get('/loginWorkspace', checkToken,body("id").isEmpty(), errorsHandler, enterWorkspace);
 
-router.post('/workspace',checkToken,createWorkspace);
+router.post('/workspace',checkToken,body("name").isEmpty(), errorsHandler,createWorkspace);
 router.post('/join/workspace',checkToken,joinWorkspace);
 
- //sicuramente piu facile di slack official
+
 router.delete('/user',deleteAccount);
 export default router;
 
-//faccio le chiamate
-/*import ExpressValidator = require('express-validator');
-import util = require('util');
 
-
-function getOnePreconditions(req:ExpressValidator.RequestValidation, res:express.Response, next:Function) {
-    req.checkParams('id', 'Parameter Id is mandatory').notEmpty().isInt();
-    var errors = req.validationErrors();
-    if (errors) {
-        res.send(400, 'errors' + util.inspect(errors));
-    } else {
-        next();
-    }
-}
-
-
-
-
-tsd install express-validator --save */

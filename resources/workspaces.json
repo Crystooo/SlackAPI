@@ -8,9 +8,11 @@
       "RDH1SuzYvZcYdoB3g73NDt"
     ],
     "usersList": [
-      "pippo2@gmail.com",
+      "pippo4@gmail.com",
+      "pippo@gmail.com",
       "pippo3@gmail.com",
-      "pippo4@gmail.com"
+      "nello@taver.it",
+      "pippo2@gmail.com"
     ]
   },
   {
@@ -21,31 +23,23 @@
       "D2SZLG1dfHn9SZEr88KaLf"
     ],
     "usersList": [
-      "pippo@gmail.com",
       "pippo3@gmail.com"
     ]
-  },
-  {
-    "id": "VytYe5pmwGtd7JQaH9bfFn",
-    "name": "thirdWorkspace",
-    "channelsList": [
-      "Ws4MkXwMUj73TqawoJUJPc",
-      "HekUX1wfqEyME9dkDxLzGK"
-    ],
-    "usersList": []
   },
   {
     "id": "VfuvFyLpm6HoPP1Bp99Z9N",
     "name": "Happy Hippo Freestyle",
     "channelsList": [
       "6HDpiA1Xnhuj9xz7utkF9S",
-      "9xZSha8KT9FEQnmY79AM9k"
+      "9xZSha8KT9FEQnmY79AM9k",
+      "RXuKDT12b8tGtkda4gLC6V",
+      "SoN5qv5sqbfy1acQ69J6ng"
     ],
     "usersList": [
-      "pippo2@gmail.com",
       "pippo4@gmail.com",
-      "pippo3@gmail.com",
-      "pippo5@gmail.com"
+      "nello@taver.it",
+      "pippo2@gmail.com",
+      "happy@hippo.freestyle"
     ]
   }
 ]

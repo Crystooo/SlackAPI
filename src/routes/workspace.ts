@@ -5,12 +5,13 @@ import { existsSync } from 'fs';
 router.use(bodyparser.json());
 router.use(bodyparser.urlencoded({extended: true}));
 import redis from 'redis';
-import bluebird, { resolve } from 'bluebird';
+import bluebird from 'bluebird';
 import { User } from '../interfaces/user';
 import { Workspace } from '../interfaces/workspace'
 import { Channel } from '../interfaces/channel'
 import UIDGenerator from 'uid-generator';
 import fs from 'fs';
+import { body, validationResult } from 'express-validator'
 const uidgen = new UIDGenerator();
 const path = process.cwd() + '\\resources\\workspaces.json'
 const path2 = process.cwd() + '\\resources\\channels.json'
@@ -19,6 +20,15 @@ let workspacesReadByFile: Workspace[]=[];
 let channelsReadByFile: Channel[]=[];
 workspacesReadByFile = readFile(workspacesReadByFile,path) as Workspace[];
 channelsReadByFile = readFile(channelsReadByFile,path2) as Channel[];
+
+var errorsHandler = (req:Request, res:Response, next:NextFunction) => {
+    var errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors: errors.array()});
+    }
+    next();
+}
+
 
 let getUser = async (tkn:string):Promise<User | null> => {  
     let userMail = await client.getAsync(tkn);
@@ -38,23 +48,14 @@ let checkToken =async ({headers:{tkn}}:Request, res:Response,next:NextFunction)=
     }
 }
 
-/*let checkWorkspace=async ({body:{workspaceId}}:Request, res:Response,next:NextFunction)=>{
-    let workspace=workspacesReadByFile.find(item => item.id === workspaceId)
-    if(!workspace){
-        res.status(404).json({message:"workspace not found"})
-    }else{
-        next()
-    }
-}*/
-
 let getWorkspaceName = ({headers: {workspace_id}}:Request, res:Response) => {
     let workspace = workspacesReadByFile.find(item => item.id === workspace_id);
     workspace && res.status(200).json({name: workspace.name}) || res.status(404).json({message:"workspace not found"});
 }
 
-let createChannel = async({headers: {tkn, workspace_id}, body: {name}}:Request, res:Response) => {
+let createChannel = async({headers: {workspace_id, tkn}, body: {channelName, privacy}}:Request, res:Response) => {
     let user = await getUser(tkn as  string);
-    let channel = {id:uidgen.generateSync(), name, usersList: [user!.email], messagesList: []};
+    let channel = {id:uidgen.generateSync(), name: channelName, private: privacy, usersList: [user!.email], messagesList: []};
     let workspace = workspacesReadByFile.find(({id}) => id === workspace_id);
     workspace!.channelsList.push(channel.id);
     updateFile(workspacesReadByFile, path);
@@ -76,27 +77,27 @@ let deleteChannel = ({headers:{workspace_id, channel_id}}:Request, res:Response)
     res.status(200).json({message:"canale eliminato"});
 }
 
-let getChannelsNames= async ({headers:{workspace_id}}:Request, res:Response)=>{//incompleto
-    let channelsName: string[] = [];
-    let workspace=workspacesReadByFile.find(item => item.id === workspace_id)
+let getChannels= async ({headers:{workspace_id}}:Request, res:Response)=>{
+    let channels: {id:string, name:string}[] = [];
+    let workspace=workspacesReadByFile.find(item => item.id === workspace_id);
     workspace!.channelsList!.forEach(channelId => channelsReadByFile.find(
-        item => {item.id === channelId && channelsName.push(item.name)}));
-    res.status(200).json({listOfChannels:channelsName})
+        item => {item.id === channelId && channels.push({id: item.id, name: item.name})}));
+    res.status(200).json(channels);
 }
 
 let getUsers = async ({headers:{workspace_id}}:Request, res:Response)=>{
     let workspace=workspacesReadByFile.find(item => item.id === workspace_id)
-    let usersName:{email:string, username:string}[] = []
+    let users:{email:string, username:string}[] = []
     for (let email of workspace!.usersList){//workspace.usersList.foreach
         let user = await client.getAsync(email);
         if(user){
             let {email, username} = JSON.parse(user);
-            usersName.push({email, username});
+            users.push({email, username});
         }else{
             res.status(404).json({message: "User not found."});
         }
     }
-    res.status(200).json({listOfUsers:usersName})
+    res.status(200).json(users)
 }
 
 let leaveWorkspace = async ({headers: {tkn,workspace_id}}:Request, res:Response) => {//delete no body
@@ -131,12 +132,12 @@ function updateFile(container: Workspace[] | Channel [], filePath:string){
 
 client.on("error", (error: any)=>console.error(error))
 router.get('/', getWorkspaceName);
-router.get('/channel',checkToken,getChannelsNames);
-router.get('/user',checkToken,getUsers);
-router.post('/channel',checkToken,createChannel);
+router.get('/channels',getChannels);
+router.get('/users', getUsers);
+router.post('/channels',checkToken,body("name").isEmpty(), errorsHandler,createChannel);
 
 router.delete('/leave',checkToken,leaveWorkspace);
-router.delete('/channel',checkToken,deleteChannel);
+router.delete('/channels',checkToken,deleteChannel);
 
 
 export default router;
