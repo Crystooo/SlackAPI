@@ -55,9 +55,16 @@
     "usersList": [
       "pippo4@gmail.com",
       "nello@taver.it",
-      "pippo2@gmail.com"
+      "pippo2@gmail.com",
+      "happy@hippo.freestyle"
     ],
-    "messagesList": []
+    "messagesList": [
+      "TestMessaggio",
+      "TestMessaggio2",
+      "GkSWHUdteeRawTyTtBfSfJ",
+      "JydSbAJZB1zwyPVeeJx6mP",
+      "8kfBRJg5xq2Z26wFarZGuo"
+    ]
   },
   {
     "id": "9xZSha8KT9FEQnmY79AM9k",
@@ -66,7 +73,23 @@
     "usersList": [
       "pippo4@gmail.com",
       "nello@taver.it",
-      "pippo2@gmail.com"
+      "pippo2@gmail.com",
+      "happy@hippo.freestyle"
+    ],
+    "messagesList": [
+      "YNXMahX6gmgGuN8emdaaVY",
+      "DVZUjTqBS1Xry9fmapWP4r"
+    ]
+  },
+  {
+    "id": "SoN5qv5sqbfy1acQ69J6ng",
+    "name": "TestAPI",
+    "private": "true",
+    "usersList": [
+      "pippo2@gmail.com",
+      "nello@taver.it",
+      "pippo4@gmail.com",
+      "happy@hippo.freestyle"
     ],
     "messagesList": []
   }

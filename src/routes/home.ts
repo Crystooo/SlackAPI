@@ -99,6 +99,10 @@ let deleteAccount = async({headers: {tkn}}:Request, res:Response) => {
             workspace.usersList.find((email) => {email === user!.email && 
                 workspace.usersList.splice(workspace.usersList.indexOf(email), 1)})));
         updateFile(workspacesReadByFile, path);
+        (channelsReadByFile.forEach(channel => 
+            channel.usersList.find((email) => {email === user!.email && 
+                channel.usersList.splice(channel.usersList.indexOf(email), 1)})));
+        updateFile(channelsReadByFile, path2);
         client.del(tkn);
         client.del(user.email);
         res.status(200).json({message: "User deleted."})

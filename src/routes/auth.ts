@@ -1,4 +1,4 @@
-import express, {NextFunction, Request, Response, Router} from 'express';
+import express, {NextFunction, request, Request, Response, Router} from 'express';
 let router= Router();
 import bodyparser from'body-parser';
 router.use(bodyparser.json());
@@ -41,6 +41,7 @@ let login = async ({headers: {tkn,email, password}}:Request, res:Response) => {
                 let token = uidgen.generateSync();
                 token=String(token)
                 client.set(token, info.email);
+                client.expire(token,3600)
                 res.status(200).json({token,username:info.username})
             }else{
                 res.status(400).json({message: "Wrong password!"});
@@ -57,6 +58,15 @@ let logout = async ({headers:{tkn}}:Request, res:Response) => {
 }
 
 client.on("error", (error: any)=>console.error(error))
+
+router.get('/email', async ({headers: {tkn}}:Request, res:Response) => {
+    let email = await client.getAsync(tkn);
+    if(email){
+        res.status(200).json(email)
+    }else{
+        res.status(200).json({message: "user not found"})
+    }
+})
 
 router.post('/login', login)
 
