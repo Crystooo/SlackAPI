@@ -134,7 +134,7 @@ client.on("error", (error: any)=>console.error(error));
 router.get('/workspace',checkToken,AllWorkspaces);
 router.get('/loginWorkspace', checkToken,body("id").isEmpty(), errorsHandler, enterWorkspace);
 
-router.post('/workspace',checkToken,body("name").isEmpty(), errorsHandler,createWorkspace);
+router.post('/workspace',checkToken,body("body.name").isEmpty(), errorsHandler,createWorkspace);
 router.post('/join/workspace',checkToken,joinWorkspace);
 
 

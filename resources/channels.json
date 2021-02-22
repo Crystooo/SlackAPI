@@ -35,7 +35,8 @@
     "name": "random",
     "private": false,
     "usersList": [
-      "pippo3@gmail.com"
+      "pippo3@gmail.com",
+      "pippo2@gmail.com"
     ],
     "messagesList": []
   },
@@ -44,7 +45,8 @@
     "name": "generale",
     "private": false,
     "usersList": [
-      "pippo3@gmail.com"
+      "pippo3@gmail.com",
+      "pippo2@gmail.com"
     ],
     "messagesList": []
   },
@@ -90,6 +92,258 @@
       "nello@taver.it",
       "pippo4@gmail.com",
       "happy@hippo.freestyle"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "LeJLxL1hWDjujWqPD29w15",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "RZppseRUzDAfPBzEwtsZCg",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "FfHEEAjVtwostxK3EHAY9k",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "NZAwMBoSn3XRqZf7tpSaGG",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "TJWW3HWiHUYbaiu2gi9mJF",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "Bb2od9GrTMrsHShAJSbhJi",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "K9ZW6UVN2H84uQC6JeDQVq",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "UMp2HFeTvHBq7F5YqW81aJ",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "26RouyeJpi6vc1Wr7Bqk7n",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "PcXjszcQYb2Z77BtKNNX51",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "XaS2grk32BhsFpJQxCJwp8",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "SNPhRvMchmw16qbLGa4QWw",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "DPevJPmFUMNFzJQuSc47w5",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "PapcV8A9iCvnkaYuh9RCSi",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "9fX8gaAp6Whb6cyfRyatRG",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "BLrQJdE1fJFRQuq7JoJ8iC",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "EwrdWe7pjKuPcWGj2afkp8",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "BgyQnQNWkkjafU2rzu7Eej",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "2WJjVeZgsd3qfsJYuJTRkS",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "RySdyrjVn7psVTdztdguQZ",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "QjNDgBA6mruYVcRPhrwZDb",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "Gutud7SCKS876K8HH3bzGw",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "Y5ymLHcxggK8W3BCKGsXBF",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "BhRphHWyTGaesAYyCjYAYG",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "Uzr3vSYxJwYDgLzMme7wCf",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "2sKMqHdpe6AKY4GQgSVtFS",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "VuzaU9Ujh5peoY1UsJo9Jw",
+    "name": "Random",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
+    ],
+    "messagesList": []
+  },
+  {
+    "id": "Xp7dkqKbAzRpsdNc6ReisH",
+    "name": "General",
+    "private": false,
+    "usersList": [
+      "pippo2@gmail.com"
     ],
     "messagesList": []
   }
